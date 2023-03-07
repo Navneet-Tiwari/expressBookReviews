@@ -3,6 +3,7 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+let doesExist = require("./auth_users.js").doesExist;
 
 
 public_users.post("/register", (req,res) => {
@@ -17,7 +18,8 @@ public_users.post("/register", (req,res) => {
       return res.status(404).json({message: "User already exists!"});
     }
   }
-  return res.status(404).json({message: "Unable to register user."});
+//   return res.status(404).json({message: "Unable to register user.","username"  : username, "password": password});
+    res.send("Unable to register user." +(' ')+ (username) + (password));
 //   return res.status(300).json({message: "Yet to be implemented"});
 });
 
