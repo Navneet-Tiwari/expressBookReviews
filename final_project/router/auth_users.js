@@ -48,7 +48,8 @@ regd_users.post("/login", (req,res) => {
     req.session.authorization = {
       accessToken,username
   }
-  return res.status(200).send("User successfully logged in");
+  req.session.username = username;
+  return res.status(200).send("User successfully logged in "+ req.session.username);
   } else {
     return res.status(208).json({message: "Invalid Login. Check username and password"})};
 //   return res.status(300).json({message: "Yet to be implemented"});
@@ -65,10 +66,13 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     let review_user = username;
 
     if(review){
-        Book_reviews =  book["reviews"]
+        Book_reviews =  books[isbn].reviews
         // Object.values(Book_reviews).filter((Book_review) => Book_review.author === username);
         // book["reviews"]= {review_user : review}
         Book_reviews[review_user] = review;
+        return res.status(300).json({"Review added":books[isbn].reviews,"session_user":username});
+        
+
     }
     else{
         return res.status(300).json({message: "Review not received"});
@@ -80,10 +84,39 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 
 
   }
+  else{return res.status(300).json({message: "Book Not found"});}
 
-  return res.status(300).json({message: "Yet to be implemented"});
+//   return res.status(300).json({message: "Yet to be implemented"});
 
   
+});
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+
+    const username = req.session.username;
+    const isbn  = req.params.isbn;
+    let book = books[isbn];
+    if(book){
+        let review = req.query.review;
+        let review_user = username;
+
+        // if(review){
+            Book_reviews =  books[isbn].reviews
+            // Object.values(Book_reviews).filter((Book_review) => Book_review.author === username);
+            // book["reviews"]= {review_user : review}
+            // Book_reviews[review_user] = review;
+            delete Book_reviews.review_user;
+            return res.status(300).json({"Review deleted":books[isbn].reviews,"session_user":username});
+            
+
+        // }
+        // else{
+        //     return res.status(300).json({message: "Review not found"});
+        // }
+    }
+    else{return res.status(300).json({message: "Book Not found"});
+    }
+
 });
 
 module.exports.authenticated = regd_users;
